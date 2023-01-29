@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:intl/intl.dart';
 import 'package:args/args.dart';
+import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 
 Future<void> main(List<String> args) async {
   // ---------- 引数パース ----------
@@ -13,10 +14,12 @@ Future<void> main(List<String> args) async {
     valueHelp: '/path/to/file.md',
   );
   // オプション：出力ファイル名指定
-  parser.addOption('title',
-      abbr: "t",
-      help: 'Defile output filename (won\'t work with \'--output\' option)',
-      valueHelp: 'file.md');
+  parser.addOption(
+    'title',
+    abbr: "t",
+    help: 'Define output filename (won\'t work with \'--output\' option)',
+    valueHelp: 'file.md',
+  );
   // オプション：出力ディレクトリ指定
   parser.addOption(
     'directory',
@@ -45,13 +48,12 @@ Future<void> main(List<String> args) async {
 
   // ホームとデスクトップのディレクトリパス
   final String homePath = getHomeDir();
-  final String desktopPath = "$homePath/Desktop/";
+  final String desktopPath = "${homePath}Desktop/";
 
   // 出力ファイル名 (値は下行で決定するため、ここでは宣言まで)
   late String fileName;
-  late String fileExtention = '.${fileName.split('.').removeLast()}'; // ファイル拡張子
-  late String fileNameRaw =
-      fileName.substring(0, fileName.length - fileExtention.length); // ファイル名の拡張子以前の部分
+  late String fileExtention = extension(fileName); // ファイル拡張子
+  late String fileNameRaw = basenameWithoutExtension(fileName); // ファイル名の拡張子以前の部分
   late String fileDir; // 出力ディレクトリパス
   late String filePath; // 出力ファイルパス
   int fileIndex = 1; // ファイル名の連番用
@@ -66,7 +68,7 @@ Future<void> main(List<String> args) async {
     fileName = filePathArray.removeLast();
     fileDir = '${filePathArray.join('/')}/';
   } else {
-    // titleオプションでファイル指定した場合
+    // titleオプションでファイル名指定
     if (results['title'] != null) {
       fileName = '$timestamp' '_' '${results['title']}.md';
     } else {
@@ -126,7 +128,7 @@ String getHomeDir() {
   }
 
   // 出力
-  return home;
+  return '$home/';
 }
 
 // ---------- テンプレート文字列出力 ----------
@@ -147,5 +149,28 @@ String getMinutesTemplate() {
 ## 議事録
 
 - 
+''';
+}
+
+String getErTemplate() {
+  return '''@startuml er
+hide circle
+skinparam linetype ortho
+
+entity Entity {
+    id : number
+    ---
+    title : text
+    category_id : number <<FK>>
+}
+
+entity Category {
+    id : number
+    ---
+    title : text
+}
+
+Entity o--|| Category
+@enduml
 ''';
 }

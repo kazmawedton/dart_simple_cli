@@ -1,0 +1,19 @@
+@startuml er
+hide circle
+skinparam linetype ortho
+
+entity Entity {
+    id : number
+    ---
+    title : text
+    category_id : number <<FK>>
+}
+
+entity Category {
+    id : number
+    ---
+    title : text
+}
+
+Entity o--|| Category
+@enduml
