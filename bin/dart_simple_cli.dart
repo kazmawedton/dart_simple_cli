@@ -52,7 +52,7 @@ Future<void> main(List<String> args) async {
 
   // 出力ファイル名 (値は下行で決定するため、ここでは宣言まで)
   late String fileName;
-  late String fileExtention = extension(fileName); // ファイル拡張子
+  late String fileExtention = extension(fileName) == '' ? '.md' : extension(fileName); // ファイル拡張子
   late String fileNameRaw = basenameWithoutExtension(fileName); // ファイル名の拡張子以前の部分
   late String fileDir; // 出力ディレクトリパス
   late String filePath; // 出力ファイルパス
@@ -152,7 +152,7 @@ String getMinutesTemplate() {
 ''';
 }
 
-String getErTemplate() {
+String getErDiagramTemplate() {
   return '''@startuml er
 hide circle
 skinparam linetype ortho
